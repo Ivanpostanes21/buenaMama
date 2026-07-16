@@ -87,11 +87,7 @@ class _LoginScreenState extends State<LoginScreen>
     await Future<void>.delayed(const Duration(seconds: 2));
     if (!mounted) return;
 
-<<<<<<< HEAD
-    final bool valid = email == 'admin@test.com' && password == '123456';
-=======
     final bool valid = email == 'admin' && password == '123';
->>>>>>> c5ce3bf (customer desing, add customer button, loan button, firebase)
 
     if (valid) {
       setState(() => _buttonState = LoginButtonState.success);

@@ -40,10 +40,8 @@ dependencies:
 
   # Poppins/Inter typography.
   google_fonts: ^6.2.1
-<<<<<<< HEAD
-=======
-  firebase_core: ^3.6.0
-  cloud_firestore: ^5.4.7
+  firebase_core: ^4.12.1
+  cloud_firestore: ^6.7.1
   intl: ^0.20.3
 >>>>>>> c5ce3bf (customer desing, add customer button, loan button, firebase)
 
