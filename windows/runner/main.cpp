@@ -25,11 +25,16 @@ int APIENTRY wWinMain(_In_ HINSTANCE instance, _In_opt_ HINSTANCE prev,
   project.set_dart_entrypoint_arguments(std::move(command_line_arguments));
 
   FlutterWindow window(project);
+<<<<<<< HEAD
   // Match the fixed size configured via window_manager in Dart so there is no
   // visible resize/flash on launch. window_manager still centers and hides the
   // title bar from the Dart side (see lib/window_setup.dart).
   Win32Window::Point origin(10, 10);
   Win32Window::Size size(400, 630);
+=======
+  Win32Window::Point origin(10, 10);
+  Win32Window::Size size(1280, 720);
+>>>>>>> c5ce3bf (customer desing, add customer button, loan button, firebase)
   if (!window.Create(L"buenamama", origin, size)) {
     return EXIT_FAILURE;
   }

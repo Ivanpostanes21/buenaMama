@@ -58,7 +58,10 @@ class AppTopBar extends StatelessWidget {
               ),
             ),
           ),
+<<<<<<< HEAD
           _buildSearch(),
+=======
+>>>>>>> c5ce3bf (customer desing, add customer button, loan button, firebase)
           const SizedBox(width: 14),
           const _NotificationBell(),
           const SizedBox(width: 8),

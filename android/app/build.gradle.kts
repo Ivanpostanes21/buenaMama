@@ -1,5 +1,11 @@
 plugins {
     id("com.android.application")
+<<<<<<< HEAD
+=======
+    // START: FlutterFire Configuration
+    id("com.google.gms.google-services")
+    // END: FlutterFire Configuration
+>>>>>>> c5ce3bf (customer desing, add customer button, loan button, firebase)
     id("kotlin-android")
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id("dev.flutter.flutter-gradle-plugin")

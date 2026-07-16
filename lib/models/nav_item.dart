@@ -24,26 +24,31 @@ const List<NavItem> kNavItems = [
     label: 'Dashboard',
     description: 'Overview of your lending activity at a glance.',
     icon: Icons.dashboard_rounded,
+    lockedForGuest: true,
   ),
   NavItem(
     label: 'Customers',
     description: 'Manage borrowers and their profiles.',
     icon: Icons.people_alt_rounded,
+    lockedForGuest: false,
   ),
   NavItem(
     label: 'Loans',
     description: 'Track loan applications, disbursements and balances.',
     icon: Icons.account_balance_wallet_rounded,
+    lockedForGuest: true,
   ),
   NavItem(
     label: 'Payments',
     description: 'Record and review incoming repayments.',
     icon: Icons.payments_rounded,
+    lockedForGuest: true,
   ),
   NavItem(
     label: 'Reports',
     description: 'Analyze performance with detailed reports.',
     icon: Icons.bar_chart_rounded,
+    lockedForGuest: true,
   ),
   NavItem(
     label: 'Users',

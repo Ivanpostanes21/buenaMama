@@ -26,7 +26,7 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen>
     with SingleTickerProviderStateMixin {
-  int _selectedIndex = 0;
+  late int _selectedIndex = widget.isGuest ? 1 : 0;
   bool _collapsed = false;
 
   // Replays a fade + slight upward slide whenever the page changes.
@@ -42,9 +42,9 @@ class _MainScreenState extends State<MainScreen>
     end: Offset.zero,
   ).animate(CurvedAnimation(parent: _pageController, curve: Curves.easeOutCubic));
 
-  late final List<Widget> _pages = const [
+  late final List<Widget> _pages = [
     DashboardPage(),
-    CustomersPage(),
+    CustomersPage(isGuest: widget.isGuest),
     LoansPage(),
     PaymentsPage(),
     ReportsPage(),

@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "73523727835",
+    "firebase_url": "https://buenamama-6c27b-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "buenamama-6c27b",
+    "storage_bucket": "buenamama-6c27b.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:73523727835:android:1afb20a2f01f1f3dfbabfe",
+        "android_client_info": {
+          "package_name": "com.example.buenamama"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD-gjm_-evBlW6pyNMGggsnWETvaQ-8-SM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
