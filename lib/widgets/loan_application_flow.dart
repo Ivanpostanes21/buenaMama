@@ -265,7 +265,7 @@ class _SeparateLoanFormDialogState extends State<SeparateLoanFormDialog> {
                   Expanded(
                     child: TextFormField(
                       controller: _cmContact, 
-                      decoration: const InputDecoration(labelText: "Contact No."),
+                      decoration: const InputDecoration(labelText: "Contact No. *"),
                       validator: (v) => v == null || v.isEmpty ? 'Required' : null,
                       )),
                   const SizedBox(width: 8),
