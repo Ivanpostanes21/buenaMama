@@ -4,7 +4,7 @@ import '../models/nav_item.dart';
 import '../theme/app_colors.dart';
 
 const double _kExpandedWidth = 240;
-const double _kCollapsedWidth = 74;
+const double _kCollapsedWidth = 75;
 const double _kItemExtent = 54; // pill (44) + vertical margins (2 x 5)
 
 /// Dark, collapsible navigation rail. Renders [kNavItems], a moving lime
@@ -92,7 +92,8 @@ class AppSidebar extends StatelessWidget {
               child: Image.asset('assets/logo.png', fit: BoxFit.cover),
             ),
           ),
-          const SizedBox(width: 12),
+          if (!collapsed) const SizedBox(width: 12),
+          if (!collapsed)
           Expanded(
             child: ClipRect(
               child: OverflowBox(
@@ -229,7 +230,8 @@ class _SidebarItemState extends State<_SidebarItem> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Icon(widget.item.icon, size: 21, color: fg),
-                const SizedBox(width: 14),
+                if (!widget.collapsed) const SizedBox(width: 14),
+                if (!widget.collapsed)
                 AnimatedOpacity(
                   opacity: widget.collapsed ? 0 : 1,
                   duration: const Duration(milliseconds: 200),
@@ -340,7 +342,8 @@ class _SidebarButtonState extends State<_SidebarButton> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Icon(widget.icon, size: 21, color: fg),
-                    const SizedBox(width: 14),
+                    if (!widget.collapsed) const SizedBox(width: 14),
+                    if (!widget.collapsed)
                     AnimatedOpacity(
                       opacity: widget.collapsed ? 0 : 1,
                       duration: const Duration(milliseconds: 200),

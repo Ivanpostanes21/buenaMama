@@ -3,11 +3,8 @@
 #
 
 list(APPEND FLUTTER_PLUGIN_LIST
-<<<<<<< HEAD
-=======
   cloud_firestore
   firebase_core
->>>>>>> c5ce3bf (customer desing, add customer button, loan button, firebase)
   screen_retriever_windows
   window_manager
 )

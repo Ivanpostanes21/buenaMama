@@ -43,7 +43,7 @@ dependencies:
   firebase_core: ^4.12.1
   cloud_firestore: ^6.7.1
   intl: ^0.20.3
->>>>>>> c5ce3bf (customer desing, add customer button, loan button, firebase)
+
 
 dev_dependencies:
   flutter_test:

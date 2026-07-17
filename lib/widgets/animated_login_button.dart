@@ -62,7 +62,7 @@ class _AnimatedLoginButtonState extends State<AnimatedLoginButton>
     final bool hoverActive = _hovering && isIdle && !_pressed;
 
     // When idle the button is full-width; otherwise it collapses to a circle.
-    final double targetWidth = isIdle ? double.infinity : widget.height;
+    final double targetWidth = isIdle ? 292 : widget.height;
     final double scale = _pressed ? 0.97 : (hoverActive ? 1.02 : 1.0);
     // Lift the button up by 2px on hover.
     final double lift = hoverActive ? -2.0 : 0.0;
