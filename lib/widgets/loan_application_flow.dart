@@ -163,7 +163,7 @@ class _SeparateLoanFormDialogState extends State<SeparateLoanFormDialog> {
         height: MediaQuery.of(context).size.height * 0.85,
         padding: const EdgeInsets.all(24),
         child: Form(
-          key: _fKey,
+          key: _fKey, // This form key enables validation
           child: SingleChildScrollView(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -176,32 +176,81 @@ class _SeparateLoanFormDialogState extends State<SeparateLoanFormDialog> {
                 const Text("Loan Info", style: TextStyle(fontWeight: FontWeight.w600)),
                 const Divider(),
                 Row(children: [
-                  Expanded(child: TextFormField(controller: _category, decoration: const InputDecoration(labelText: "Category"))),
+                  Expanded(
+                    child: TextFormField(
+                      controller: _category, 
+                      decoration: const InputDecoration(labelText: "Category *"),
+                      validator: (v) => v == null || v.isEmpty ? 'Required' : null,
+                    )
+                  ),
                   const SizedBox(width: 8),
-                  Expanded(child: TextFormField(controller: _amount, keyboardType: TextInputType.number, decoration: const InputDecoration(labelText: "Amount (₱)"))),
+                  Expanded(
+                    child: TextFormField(
+                      controller: _amount, 
+                      keyboardType: TextInputType.number, 
+                      decoration: const InputDecoration(labelText: "Amount (₱) *"),
+                      validator: (v) => v == null || v.isEmpty ? 'Required' : null,
+                    )
+                  ),
                 ]),
                 Row(children: [
-                  Expanded(child: TextFormField(controller: _rate, keyboardType: TextInputType.number, decoration: const InputDecoration(labelText: "Rate (%)"))),
+                  Expanded(
+                    child: TextFormField(
+                      controller: _rate, 
+                      keyboardType: TextInputType.number, 
+                      decoration: const InputDecoration(labelText: "Rate (%) *"),
+                      validator: (v) => v == null || v.isEmpty ? 'Required' : null,
+                    )
+                  ),
                   const SizedBox(width: 8),
-                  Expanded(child: TextFormField(controller: _term, keyboardType: TextInputType.number, decoration: const InputDecoration(labelText: "Term (Months/Days)"))),
+                  Expanded(
+                    child: TextFormField(
+                      controller: _term, 
+                      keyboardType: TextInputType.number, 
+                      decoration: const InputDecoration(labelText: "Term (Months/Days) *"),
+                      validator: (v) => v == null || v.isEmpty ? 'Required' : null,
+                    )
+                  ),
                 ]),
                 Row(children: [
-                  Expanded(child: TextFormField(controller: _paymentStructure, decoration: const InputDecoration(labelText: "Payment Structure"))),
+                  Expanded(
+                    child: TextFormField(
+                      controller: _paymentStructure, 
+                      decoration: const InputDecoration(labelText: "Payment Structure *"),
+                      validator: (v) => v == null || v.isEmpty ? 'Required' : null,
+                    )
+                  ),
                   const SizedBox(width: 8),
-                  Expanded(child: TextFormField(controller: _monthlyDue, keyboardType: TextInputType.number, decoration: const InputDecoration(labelText: "Monthly Due (₱)"))),
+                  Expanded(
+                    child: TextFormField(
+                      controller: _monthlyDue, 
+                      keyboardType: TextInputType.number, 
+                      decoration: const InputDecoration(labelText: "Monthly Due (₱) *"),
+                      validator: (v) => v == null || v.isEmpty ? 'Required' : null,
+                    )
+                  ),
                 ]),
                 const SizedBox(height: 24),
 
                 const Text("Co-Maker's Information", style: TextStyle(fontWeight: FontWeight.w600)),
                 const Divider(),
-                TextFormField(controller: _cmName, decoration: const InputDecoration(labelText: "Name")),
-                TextFormField(controller: _cmAddress, decoration: const InputDecoration(labelText: "Address")),
+                TextFormField(
+                  controller: _cmName, 
+                  decoration: const InputDecoration(labelText: "Name *"),
+                  validator: (v) => v == null || v.isEmpty ? 'Required' : null,
+                ),
+                TextFormField(
+                  controller: _cmAddress, 
+                  decoration: const InputDecoration(labelText: "Address *"),
+                  validator: (v) => v == null || v.isEmpty ? 'Required' : null,
+                ),
                 Row(children: [
                   Expanded(
                     child: TextFormField(
                       controller: _cmDob, 
                       readOnly: true, 
-                      decoration: const InputDecoration(labelText: "Date of Birth", suffixIcon: Icon(Icons.calendar_today)),
+                      decoration: const InputDecoration(labelText: "Date of Birth *", suffixIcon: Icon(Icons.calendar_today)),
+                      validator: (v) => v == null || v.isEmpty ? 'Required' : null,
                       onTap: () async {
                         DateTime? pickedDate = await showDatePicker(
                           context: context, initialDate: DateTime.now(), firstDate: DateTime(1900), lastDate: DateTime.now(),
@@ -213,7 +262,12 @@ class _SeparateLoanFormDialogState extends State<SeparateLoanFormDialog> {
                     ),
                   ),
                   const SizedBox(width: 8),
-                  Expanded(child: TextFormField(controller: _cmContact, decoration: const InputDecoration(labelText: "Contact No."))),
+                  Expanded(
+                    child: TextFormField(
+                      controller: _cmContact, 
+                      decoration: const InputDecoration(labelText: "Contact No."),
+                      validator: (v) => v == null || v.isEmpty ? 'Required' : null,
+                      )),
                   const SizedBox(width: 8),
                   Expanded(child: TextFormField(controller: _cmMessenger, decoration: const InputDecoration(labelText: "Messenger"))),
                 ]),
@@ -227,7 +281,7 @@ class _SeparateLoanFormDialogState extends State<SeparateLoanFormDialog> {
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(backgroundColor: AppColors.primaryGreen, foregroundColor: Colors.white),
                       onPressed: _isSaving ? null : () async {
-                        if (_fKey.currentState!.validate()) {
+                        if (_fKey.currentState!.validate()) { // THIS TRIGGERS THE REQUIRED CHECKS
                           setState(() => _isSaving = true);
                           DateTime cmParsedDob;
                           try { cmParsedDob = DateFormat('yyyy-MM-dd').parse(_cmDob.text); } 

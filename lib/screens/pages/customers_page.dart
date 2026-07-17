@@ -222,12 +222,15 @@ class CustomerDetailDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Define a darker grey for better visibility
+    final Color darkGrey = Colors.grey.shade800;
+
     String formattedIncome = NumberFormat('#,##0.00').format(customer.monthlyIncome);
     String formattedLoan = NumberFormat('#,##0.00').format(customer.loanAmount);
     String formattedDue = NumberFormat('#,##0.00').format(customer.monthlyDue);
 
     return AlertDialog(
-      title: Text(customer.fullName, style: const TextStyle(fontWeight: FontWeight.bold)),
+      title: Text(customer.fullName, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 22)),
       content: SizedBox(
         width: 600, 
         child: SingleChildScrollView(
@@ -237,7 +240,7 @@ class CustomerDetailDialog extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text("Client ID: ${customer.id}", style: const TextStyle(fontWeight: FontWeight.bold, color: AppColors.primaryGreen, fontSize: 16)),
+                  Text("Client ID: ${customer.id}", style: const TextStyle(fontWeight: FontWeight.bold, color: AppColors.primaryGreen, fontSize: 18)),
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                     decoration: BoxDecoration(
@@ -247,52 +250,53 @@ class CustomerDetailDialog extends StatelessWidget {
                     child: Text(customer.status.toUpperCase(), style: TextStyle(
                       color: customer.status.toLowerCase() == 'active' ? Colors.green.shade800 : Colors.grey.shade800,
                       fontWeight: FontWeight.bold,
-                      fontSize: 12
+                      fontSize: 14
                     )),
                   )
                 ],
               ),
               const SizedBox(height: 16),
               
-              const Text("PERSONAL INFORMATION", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: Colors.grey)),
+              // Labels now use darkGrey for better visibility
+              Text("PERSONAL INFORMATION", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: darkGrey)),
               const Divider(),
-              _buildInfoRow("Address", customer.address),
-              _buildInfoRow("Mobile", customer.mobile),
-              _buildInfoRow("Email", customer.email.isNotEmpty ? customer.email : "N/A"),
-              _buildInfoRow("Messenger", customer.messenger.isNotEmpty ? customer.messenger : "N/A"),
-              _buildInfoRow("Date of Birth", "${customer.dob.month}/${customer.dob.day}/${customer.dob.year} (Age: ${customer.age.toInt()})"),
-              _buildInfoRow("Civil Status", customer.civilStatus),
-              if (customer.spouseName.isNotEmpty) _buildInfoRow("Spouse", customer.spouseName),
+              _buildInfoRow("Address", customer.address, darkGrey),
+              _buildInfoRow("Mobile", customer.mobile, darkGrey),
+              _buildInfoRow("Email", customer.email.isNotEmpty ? customer.email : "N/A", darkGrey),
+              _buildInfoRow("Messenger", customer.messenger.isNotEmpty ? customer.messenger : "N/A", darkGrey),
+              _buildInfoRow("Date of Birth", "${customer.dob.month}/${customer.dob.day}/${customer.dob.year} (Age: ${customer.age.toInt()})", darkGrey),
+              _buildInfoRow("Civil Status", customer.civilStatus, darkGrey),
+              if (customer.spouseName.isNotEmpty) _buildInfoRow("Spouse", customer.spouseName, darkGrey),
               const SizedBox(height: 16),
 
-              const Text("FINANCIAL INFORMATION", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: Colors.grey)),
+              Text("FINANCIAL INFORMATION", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: darkGrey)),
               const Divider(),
-              _buildInfoRow("Employment", "${customer.employmentStatus} ${customer.employer.isNotEmpty ? 'at ${customer.employer}' : ''}"),
-              _buildInfoRow("Other Income", customer.otherIncome.isNotEmpty ? customer.otherIncome : "None"),
-              _buildInfoRow("Household Income", "₱$formattedIncome / month"),
+              _buildInfoRow("Employment", "${customer.employmentStatus} ${customer.employer.isNotEmpty ? 'at ${customer.employer}' : ''}", darkGrey),
+              _buildInfoRow("Other Income", customer.otherIncome.isNotEmpty ? customer.otherIncome : "None", darkGrey),
+              _buildInfoRow("Household Income", "₱$formattedIncome / month", darkGrey),
               const SizedBox(height: 16),
 
-              const Text("LOAN INFORMATION", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: Colors.grey)),
+              Text("LOAN INFORMATION", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: darkGrey)),
               const Divider(),
               if (customer.loanAmount > 0) ...[
-                _buildInfoRow("Category", customer.loanCategory),
-                _buildInfoRow("Principal Amount", "₱$formattedLoan"),
-                _buildInfoRow("Interest Rate", "${customer.loanRate.toStringAsFixed(1)}%"),
-                _buildInfoRow("Term", "${customer.loanTerm.toInt()} Period(s)"),
-                _buildInfoRow("Payment Structure", customer.paymentStructure),
-                _buildInfoRow("Monthly Due", "₱$formattedDue"),
+                _buildInfoRow("Category", customer.loanCategory, darkGrey),
+                _buildInfoRow("Principal Amount", "₱$formattedLoan", darkGrey),
+                _buildInfoRow("Interest Rate", "${customer.loanRate.toStringAsFixed(1)}%", darkGrey),
+                _buildInfoRow("Term", "${customer.loanTerm.toInt()} Period(s)", darkGrey),
+                _buildInfoRow("Payment Structure", customer.paymentStructure, darkGrey),
+                _buildInfoRow("Monthly Due", "₱$formattedDue", darkGrey),
                 const SizedBox(height: 16),
                 
-                const Text("CO-MAKER INFORMATION", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: Colors.grey)),
+                Text("CO-MAKER INFORMATION", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: darkGrey)),
                 const Divider(),
-                _buildInfoRow("Name", customer.coMakerName),
-                _buildInfoRow("Address", customer.coMakerAddress),
-                _buildInfoRow("Contact No.", customer.coMakerMobile),
-                if (customer.coMakerMessenger.isNotEmpty) _buildInfoRow("Messenger", customer.coMakerMessenger),
+                _buildInfoRow("Name", customer.coMakerName, darkGrey),
+                _buildInfoRow("Address", customer.coMakerAddress, darkGrey),
+                _buildInfoRow("Contact No.", customer.coMakerMobile, darkGrey),
+                if (customer.coMakerMessenger.isNotEmpty) _buildInfoRow("Messenger", customer.coMakerMessenger, darkGrey),
               ] else ...[
-                const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 8.0),
-                  child: Text("No active loan recorded for this profile.", style: TextStyle(fontStyle: FontStyle.italic, color: Colors.grey)),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: Text("No active loan recorded for this profile.", style: TextStyle(fontStyle: FontStyle.italic, color: darkGrey, fontSize: 16)),
                 ),
               ]
             ],
@@ -300,7 +304,7 @@ class CustomerDetailDialog extends StatelessWidget {
         ),
       ),
       actions: [
-        TextButton(onPressed: () => Navigator.pop(context), child: const Text("Close")),
+        TextButton(onPressed: () => Navigator.pop(context), child: const Text("Close", style: TextStyle(fontSize: 16))),
         IconButton(
           icon: const Icon(Icons.delete, color: Colors.red), 
           tooltip: "Delete Customer",
@@ -335,25 +339,26 @@ class CustomerDetailDialog extends StatelessWidget {
               showDialog(context: parentContext, builder: (_) => CustomerFormDialog(customer: customer));
             }
           }, 
-          child: const Text("Edit Profile")
+          child: const Text("Edit Profile", style: TextStyle(fontSize: 16))
         ),
       ],
     );
   }
 
-  Widget _buildInfoRow(String label, String value) {
+  Widget _buildInfoRow(String label, String value, Color darkGrey) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 6.0),
+      padding: const EdgeInsets.only(bottom: 8.0),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(width: 150, child: Text(label, style: const TextStyle(fontWeight: FontWeight.w600, color: Colors.black87))),
-          Expanded(child: Text(value, style: const TextStyle(color: Colors.black54))),
+          SizedBox(width: 150, child: Text(label, style: TextStyle(fontWeight: FontWeight.w600, color: darkGrey, fontSize: 15))),
+          Expanded(child: Text(value, style: const TextStyle(color: Colors.black87, fontSize: 15))),
         ],
       ),
     );
   }
 }
+
 
 // --- FULL FORM DIALOG ---
 class CustomerFormDialog extends StatefulWidget {
@@ -379,7 +384,10 @@ class _CustomerFormDialogState extends State<CustomerFormDialog> {
   final _dob = TextEditingController();
   final _spouse = TextEditingController();
   final _age = TextEditingController();
-  final _civilStatus = TextEditingController();
+  
+  // --- CIVIL STATUS DROPDOWN VARIABLES ---
+  String? _selectedCivilStatus;
+  final List<String> _civilStatusOptions = ['Single', 'Married', 'Widowed', 'Separated', 'Divorced'];
   
   final _customEmpStatus = TextEditingController(); 
   final _employer = TextEditingController();
@@ -403,7 +411,14 @@ class _CustomerFormDialogState extends State<CustomerFormDialog> {
       _dob.text = DateFormat('yyyy-MM-dd').format(widget.customer!.dob);
       _spouse.text = widget.customer!.spouseName;
       _age.text = widget.customer!.age.toInt().toString();
-      _civilStatus.text = widget.customer!.civilStatus;
+      
+      // Load Civil Status Dropdown
+      if (widget.customer!.civilStatus.isNotEmpty) {
+        if (!_civilStatusOptions.contains(widget.customer!.civilStatus)) {
+          _civilStatusOptions.add(widget.customer!.civilStatus); // Safely add old text data if it doesn't match standard options
+        }
+        _selectedCivilStatus = widget.customer!.civilStatus;
+      }
       
       if (_empOptions.contains(widget.customer!.employmentStatus)) {
         _selectedEmpStatus = widget.customer!.employmentStatus;
@@ -427,7 +442,7 @@ class _CustomerFormDialogState extends State<CustomerFormDialog> {
     _fName.dispose(); _mName.dispose(); _lName.dispose();
     _address.dispose(); _mobile.dispose(); _email.dispose();
     _messenger.dispose(); _dob.dispose(); _spouse.dispose();
-    _age.dispose(); _civilStatus.dispose();
+    _age.dispose(); 
     _customEmpStatus.dispose();
     _employer.dispose(); _otherIncome.dispose(); _income.dispose();
     super.dispose();
@@ -457,7 +472,7 @@ class _CustomerFormDialogState extends State<CustomerFormDialog> {
                       maxLength: 3,
                       textCapitalization: TextCapitalization.characters,
                       decoration: const InputDecoration(
-                        labelText: "Client ID Prefix", 
+                        labelText: "Client ID Prefix *", 
                         hintText: "e.g. ABC",
                         counterText: "",
                       ),
@@ -477,26 +492,49 @@ class _CustomerFormDialogState extends State<CustomerFormDialog> {
                 ],
 
                 Row(children: [
-                  Expanded(child: TextFormField(controller: _fName, decoration: const InputDecoration(labelText: "First Name"))),
+                  Expanded(
+                    child: TextFormField(
+                      controller: _fName, 
+                      decoration: const InputDecoration(labelText: "First Name *"),
+                      validator: (v) => v == null || v.isEmpty ? 'Required' : null,
+                    )
+                  ),
                   const SizedBox(width: 8),
                   Expanded(child: TextFormField(controller: _mName, decoration: const InputDecoration(labelText: "Middle Name"))),
                   const SizedBox(width: 8),
-                  Expanded(child: TextFormField(controller: _lName, decoration: const InputDecoration(labelText: "Last Name"))),
+                  Expanded(
+                    child: TextFormField(
+                      controller: _lName, 
+                      decoration: const InputDecoration(labelText: "Last Name *"),
+                      validator: (v) => v == null || v.isEmpty ? 'Required' : null,
+                    )
+                  ),
                 ]),
-                TextFormField(controller: _address, decoration: const InputDecoration(labelText: "Complete Address")),
+                TextFormField(
+                  controller: _address, 
+                  decoration: const InputDecoration(labelText: "Complete Address *"),
+                  validator: (v) => v == null || v.isEmpty ? 'Required' : null,
+                ),
                 Row(children: [
                   Expanded(
                     child: TextFormField(
                       controller: _mobile, 
-                      decoration: const InputDecoration(labelText: "Mobile"),
+                      decoration: const InputDecoration(labelText: "Mobile *"),
                       keyboardType: TextInputType.phone, 
                       inputFormatters: [FilteringTextInputFormatter.digitsOnly], 
+                      validator: (v) => v == null || v.isEmpty ? 'Required' : null,
                     )
                   ),
                   const SizedBox(width: 8),
                   Expanded(child: TextFormField(controller: _email, decoration: const InputDecoration(labelText: "Email"))),
                   const SizedBox(width: 8),
-                  Expanded(child: TextFormField(controller: _messenger, decoration: const InputDecoration(labelText: "Messenger"))),
+                  Expanded(
+                    child: TextFormField(
+                      controller: _messenger, 
+                      decoration: const InputDecoration(labelText: "Messenger *"), 
+                      validator: (v) => v == null || v.isEmpty ? 'Required' : null, 
+                    )
+                  ),
                 ]),
                 Row(children: [
                   Expanded(
@@ -504,9 +542,10 @@ class _CustomerFormDialogState extends State<CustomerFormDialog> {
                       controller: _dob, 
                       readOnly: true, 
                       decoration: const InputDecoration(
-                        labelText: "Date of Birth",
+                        labelText: "Date of Birth *",
                         suffixIcon: Icon(Icons.calendar_today),
                       ),
+                      validator: (v) => v == null || v.isEmpty ? 'Required' : null,
                       onTap: () async {
                         DateTime initialDate = DateTime.now();
                         try {
@@ -538,21 +577,33 @@ class _CustomerFormDialogState extends State<CustomerFormDialog> {
                   Expanded(
                     child: TextFormField(
                       controller: _age, 
-                      decoration: const InputDecoration(labelText: "Age"),
+                      decoration: const InputDecoration(labelText: "Age *"),
                       keyboardType: TextInputType.number,
                       inputFormatters: [FilteringTextInputFormatter.digitsOnly], 
+                      validator: (v) => v == null || v.isEmpty ? 'Required' : null,
                     )
                   ),
                   const SizedBox(width: 8),
-                  Expanded(child: TextFormField(controller: _civilStatus, decoration: const InputDecoration(labelText: "Civil Status"))),
+                  
+                  // --- CIVIL STATUS DROPDOWN ---
+                  Expanded(
+                    child: DropdownButtonFormField<String>(
+                      value: _selectedCivilStatus,
+                      decoration: const InputDecoration(labelText: "Civil Status *"),
+                      items: _civilStatusOptions.map((status) => DropdownMenuItem(value: status, child: Text(status))).toList(),
+                      validator: (v) => v == null || v.isEmpty ? 'Required' : null,
+                      onChanged: (val) => setState(() => _selectedCivilStatus = val),
+                    )
+                  ),
                 ]),
                 TextFormField(controller: _spouse, decoration: const InputDecoration(labelText: "Name of Spouse")),
                 Row(children: [
                    Expanded(
                     child: DropdownButtonFormField<String>(
                       value: _selectedEmpStatus,
-                      decoration: const InputDecoration(labelText: "Employment Status"),
+                      decoration: const InputDecoration(labelText: "Employment Status *"),
                       items: _empOptions.map((status) => DropdownMenuItem(value: status, child: Text(status))).toList(),
+                      validator: (v) => v == null || v.isEmpty ? 'Required' : null,
                       onChanged: (val) {
                         setState(() {
                           _selectedEmpStatus = val;
@@ -566,8 +617,8 @@ class _CustomerFormDialogState extends State<CustomerFormDialog> {
                      Expanded(
                        child: TextFormField(
                          controller: _customEmpStatus,
-                         decoration: const InputDecoration(labelText: "Please specify"),
-                         validator: (v) => v == null || v.isEmpty ? "Please specify status" : null,
+                         decoration: const InputDecoration(labelText: "Please specify *"),
+                         validator: (v) => v == null || v.isEmpty ? "Required" : null,
                        )
                      ),
                    ],
@@ -647,7 +698,7 @@ class _CustomerFormDialogState extends State<CustomerFormDialog> {
                             dob: parsedDob,
                             spouseName: _spouse.text,
                             employmentStatus: finalEmpStatus, 
-                            civilStatus: _civilStatus.text,
+                            civilStatus: _selectedCivilStatus ?? '', // --- SAVES DROPDOWN VALUE ---
                             employer: _employer.text,
                             otherIncome: _otherIncome.text,
                             age: double.tryParse(_age.text) ?? 0,
