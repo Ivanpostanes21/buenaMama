@@ -106,6 +106,7 @@ class FirestoreService {
           category: d['category'] ?? '',
           paymentStructure: d['paymentStructure'] ?? '',
           amount: (d['amount'] ?? 0).toDouble(),
+          
           rate: (d['rate'] ?? 0).toDouble(),
           term: (d['term'] ?? 0).toDouble(),
           monthlyDue: (d['monthlyDue'] ?? 0).toDouble(),

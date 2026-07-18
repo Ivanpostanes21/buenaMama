@@ -1,4 +1,6 @@
+import 'dart:math'; // Required for pow()
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart'; // Required for TextInputFormatter
 import 'package:intl/intl.dart';
 import '../../models/customer.dart';
 import '../../models/loan.dart';
@@ -150,19 +152,28 @@ class _SeparateLoanFormDialogState extends State<SeparateLoanFormDialog> {
   final _paymentStructure = TextEditingController();
   final _monthlyDue = TextEditingController();
 
-  final _cmName = TextEditingController();
+  TextEditingController? _cmNameController;
   final _cmAddress = TextEditingController();
   final _cmDob = TextEditingController();
   final _cmContact = TextEditingController();
   final _cmMessenger = TextEditingController();
 
+  List<Customer> _allCustomers = [];
+
   @override
   void initState() {
     super.initState();
-    // Triggers auto-calculation anytime these fields are typed in
     _amount.addListener(_calculateDue);
     _rate.addListener(_calculateDue);
     _term.addListener(_calculateDue);
+
+    _service.getCustomers().first.then((customers) {
+      if (mounted) {
+        setState(() {
+          _allCustomers = customers;
+        });
+      }
+    });
   }
 
   @override
@@ -173,7 +184,6 @@ class _SeparateLoanFormDialogState extends State<SeparateLoanFormDialog> {
     _term.dispose();
     _paymentStructure.dispose();
     _monthlyDue.dispose();
-    _cmName.dispose();
     _cmAddress.dispose();
     _cmDob.dispose();
     _cmContact.dispose();
@@ -182,16 +192,18 @@ class _SeparateLoanFormDialogState extends State<SeparateLoanFormDialog> {
   }
 
   void _calculateDue() {
-    final amount = double.tryParse(_amount.text) ?? 0;
+    // Strip commas out before doing math
+    final amount = double.tryParse(_amount.text.replaceAll(',', '')) ?? 0;
     final rate = double.tryParse(_rate.text) ?? 0;
     final term = double.tryParse(_term.text) ?? 0;
 
-    // CHANGED: rate >= 0 allows for 0% interest loans
     if (amount > 0 && rate >= 0 && term > 0) {
       final totalInterest = amount * (rate / 100) * term;
       final totalAmount = amount + totalInterest;
       final monthly = totalAmount / term;
-      _monthlyDue.text = monthly.toStringAsFixed(2);
+      
+      // Format the result with commas
+      _monthlyDue.text = NumberFormat('#,##0.00').format(monthly);
     } else {
       _monthlyDue.text = ''; 
     }
@@ -229,7 +241,9 @@ class _SeparateLoanFormDialogState extends State<SeparateLoanFormDialog> {
                   Expanded(
                     child: TextFormField(
                       controller: _amount, 
-                      keyboardType: TextInputType.number, 
+                      keyboardType: TextInputType.number,
+                      // Apply the comma formatter here
+                      inputFormatters: [ThousandsFormatter()], 
                       decoration: const InputDecoration(labelText: "Principal Amount (₱) *"),
                       validator: (v) => v == null || v.isEmpty ? 'Required' : null,
                     )
@@ -281,11 +295,37 @@ class _SeparateLoanFormDialogState extends State<SeparateLoanFormDialog> {
 
                 const Text("Co-Maker's Information", style: TextStyle(fontWeight: FontWeight.w600)),
                 const Divider(),
-                TextFormField(
-                  controller: _cmName, 
-                  decoration: const InputDecoration(labelText: "Name *"),
-                  validator: (v) => v == null || v.isEmpty ? 'Required' : null,
+                
+                Autocomplete<Customer>(
+                  optionsBuilder: (TextEditingValue textEditingValue) {
+                    if (textEditingValue.text.isEmpty) {
+                      return const Iterable<Customer>.empty();
+                    }
+                    return _allCustomers.where((Customer option) {
+                      return option.fullName.toLowerCase().contains(textEditingValue.text.toLowerCase());
+                    });
+                  },
+                  displayStringForOption: (Customer option) => option.fullName,
+                  onSelected: (Customer selection) {
+                    _cmAddress.text = selection.address;
+                    _cmDob.text = DateFormat('yyyy-MM-dd').format(selection.dob);
+                    _cmContact.text = selection.mobile;
+                    _cmMessenger.text = selection.messenger;
+                  },
+                  fieldViewBuilder: (context, controller, focusNode, onEditingComplete) {
+                    _cmNameController = controller;
+                    return TextFormField(
+                      controller: controller,
+                      focusNode: focusNode,
+                      decoration: const InputDecoration(
+                        labelText: "Name *",
+                        hintText: "Type to search existing customers..."
+                      ),
+                      validator: (v) => v == null || v.isEmpty ? 'Required' : null,
+                    );
+                  },
                 ),
+
                 TextFormField(
                   controller: _cmAddress, 
                   decoration: const InputDecoration(labelText: "Address *"),
@@ -346,12 +386,13 @@ class _SeparateLoanFormDialogState extends State<SeparateLoanFormDialog> {
                             customerId: widget.customer.id,
                             customerName: widget.customer.fullName,
                             category: _category.text,
-                            amount: double.tryParse(_amount.text) ?? 0,
+                            // Strip commas out before saving to Firestore
+                            amount: double.tryParse(_amount.text.replaceAll(',', '')) ?? 0,
                             rate: double.tryParse(_rate.text) ?? 0,
                             term: double.tryParse(_term.text) ?? 0,
                             paymentStructure: _paymentStructure.text,
-                            monthlyDue: double.tryParse(_monthlyDue.text) ?? 0,
-                            coMakerName: _cmName.text,
+                            monthlyDue: double.tryParse(_monthlyDue.text.replaceAll(',', '')) ?? 0,
+                            coMakerName: _cmNameController?.text ?? '', 
                             coMakerAddress: _cmAddress.text,
                             coMakerDob: cmParsedDob,
                             coMakerMobile: _cmContact.text,
@@ -374,6 +415,28 @@ class _SeparateLoanFormDialogState extends State<SeparateLoanFormDialog> {
           ),
         ),
       ),
+    );
+  }
+}
+
+// --- THOUSANDS FORMATTER CLASS ---
+class ThousandsFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(TextEditingValue oldValue, TextEditingValue newValue) {
+    if (newValue.text.isEmpty) {
+      return newValue;
+    }
+    
+    // Strip non-digits safely
+    String numericOnly = newValue.text.replaceAll(RegExp(r'[^0-9]'), '');
+    if (numericOnly.isEmpty) return newValue;
+
+    final intValue = int.parse(numericOnly);
+    final stringValue = NumberFormat('#,###').format(intValue);
+    
+    return TextEditingValue(
+      text: stringValue,
+      selection: TextSelection.collapsed(offset: stringValue.length),
     );
   }
 }
