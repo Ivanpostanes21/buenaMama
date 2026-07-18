@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import '../models/customer.dart';
-import '../services/firestore_service.dart';
-import '../theme/app_colors.dart';
-import '../screens/pages/customers_page.dart'; 
+import '../../models/customer.dart';
+import '../../models/loan.dart';
+import '../../services/firestore_service.dart';
+import '../../theme/app_colors.dart';
+import '../customerPage/customer_form_dialog.dart';
 
 class LoanApplicationFlow {
   static void start(BuildContext context) {
@@ -54,7 +55,6 @@ class LoanApplicationFlow {
 class CustomerSearchDialog extends StatefulWidget {
   final String loanType;
   const CustomerSearchDialog({super.key, required this.loanType});
-
   @override
   State<CustomerSearchDialog> createState() => _CustomerSearchDialogState();
 }
@@ -131,8 +131,9 @@ class _CustomerSearchDialogState extends State<CustomerSearchDialog> {
 class SeparateLoanFormDialog extends StatefulWidget {
   final Customer customer;
   final String applicationType; 
-  
+
   const SeparateLoanFormDialog({super.key, required this.customer, required this.applicationType});
+
   @override
   State<SeparateLoanFormDialog> createState() => _SeparateLoanFormDialogState();
 }
@@ -156,6 +157,47 @@ class _SeparateLoanFormDialogState extends State<SeparateLoanFormDialog> {
   final _cmMessenger = TextEditingController();
 
   @override
+  void initState() {
+    super.initState();
+    // Triggers auto-calculation anytime these fields are typed in
+    _amount.addListener(_calculateDue);
+    _rate.addListener(_calculateDue);
+    _term.addListener(_calculateDue);
+  }
+
+  @override
+  void dispose() {
+    _category.dispose();
+    _amount.dispose();
+    _rate.dispose();
+    _term.dispose();
+    _paymentStructure.dispose();
+    _monthlyDue.dispose();
+    _cmName.dispose();
+    _cmAddress.dispose();
+    _cmDob.dispose();
+    _cmContact.dispose();
+    _cmMessenger.dispose();
+    super.dispose();
+  }
+
+  void _calculateDue() {
+    final amount = double.tryParse(_amount.text) ?? 0;
+    final rate = double.tryParse(_rate.text) ?? 0;
+    final term = double.tryParse(_term.text) ?? 0;
+
+    // CHANGED: rate >= 0 allows for 0% interest loans
+    if (amount > 0 && rate >= 0 && term > 0) {
+      final totalInterest = amount * (rate / 100) * term;
+      final totalAmount = amount + totalInterest;
+      final monthly = totalAmount / term;
+      _monthlyDue.text = monthly.toStringAsFixed(2);
+    } else {
+      _monthlyDue.text = ''; 
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Dialog(
       child: Container(
@@ -163,7 +205,7 @@ class _SeparateLoanFormDialogState extends State<SeparateLoanFormDialog> {
         height: MediaQuery.of(context).size.height * 0.85,
         padding: const EdgeInsets.all(24),
         child: Form(
-          key: _fKey, // This form key enables validation
+          key: _fKey, 
           child: SingleChildScrollView(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -188,7 +230,7 @@ class _SeparateLoanFormDialogState extends State<SeparateLoanFormDialog> {
                     child: TextFormField(
                       controller: _amount, 
                       keyboardType: TextInputType.number, 
-                      decoration: const InputDecoration(labelText: "Amount (₱) *"),
+                      decoration: const InputDecoration(labelText: "Principal Amount (₱) *"),
                       validator: (v) => v == null || v.isEmpty ? 'Required' : null,
                     )
                   ),
@@ -207,7 +249,7 @@ class _SeparateLoanFormDialogState extends State<SeparateLoanFormDialog> {
                     child: TextFormField(
                       controller: _term, 
                       keyboardType: TextInputType.number, 
-                      decoration: const InputDecoration(labelText: "Term (Months/Days) *"),
+                      decoration: const InputDecoration(labelText: "Term (Months) *"),
                       validator: (v) => v == null || v.isEmpty ? 'Required' : null,
                     )
                   ),
@@ -224,8 +266,13 @@ class _SeparateLoanFormDialogState extends State<SeparateLoanFormDialog> {
                   Expanded(
                     child: TextFormField(
                       controller: _monthlyDue, 
+                      readOnly: true, 
                       keyboardType: TextInputType.number, 
-                      decoration: const InputDecoration(labelText: "Monthly Due (₱) *"),
+                      decoration: InputDecoration(
+                        labelText: "Monthly Due (₱) *",
+                        filled: true,
+                        fillColor: Colors.grey.shade100, 
+                      ),
                       validator: (v) => v == null || v.isEmpty ? 'Required' : null,
                     )
                   ),
@@ -269,7 +316,13 @@ class _SeparateLoanFormDialogState extends State<SeparateLoanFormDialog> {
                       validator: (v) => v == null || v.isEmpty ? 'Required' : null,
                       )),
                   const SizedBox(width: 8),
-                  Expanded(child: TextFormField(controller: _cmMessenger, decoration: const InputDecoration(labelText: "Messenger"))),
+                  Expanded(
+                    child: TextFormField(
+                      controller: _cmMessenger, 
+                      decoration: const InputDecoration(labelText: "Messenger *"),
+                      validator: (v) => v == null || v.isEmpty ? 'Required' : null,
+                    )
+                  ),
                 ]),
 
                 const SizedBox(height: 32),
@@ -281,32 +334,34 @@ class _SeparateLoanFormDialogState extends State<SeparateLoanFormDialog> {
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(backgroundColor: AppColors.primaryGreen, foregroundColor: Colors.white),
                       onPressed: _isSaving ? null : () async {
-                        if (_fKey.currentState!.validate()) { // THIS TRIGGERS THE REQUIRED CHECKS
+                        if (_fKey.currentState!.validate()) { 
                           setState(() => _isSaving = true);
+                          
                           DateTime cmParsedDob;
                           try { cmParsedDob = DateFormat('yyyy-MM-dd').parse(_cmDob.text); } 
                           catch (_) { cmParsedDob = DateTime.now(); }
 
-                          final updatedCustomer = Customer(
-                            id: widget.customer.id, firstName: widget.customer.firstName, middleName: widget.customer.middleName,
-                            lastName: widget.customer.lastName, address: widget.customer.address, mobile: widget.customer.mobile,
-                            email: widget.customer.email, messenger: widget.customer.messenger, dob: widget.customer.dob,
-                            spouseName: widget.customer.spouseName, employmentStatus: widget.customer.employmentStatus,
-                            civilStatus: widget.customer.civilStatus, employer: widget.customer.employer,
-                            otherIncome: widget.customer.otherIncome, age: widget.customer.age, monthlyIncome: widget.customer.monthlyIncome,
-                            
-                            loanCategory: _category.text,
-                            loanAmount: double.tryParse(_amount.text) ?? 0,
-                            loanRate: double.tryParse(_rate.text) ?? 0,
-                            loanTerm: double.tryParse(_term.text) ?? 0,
+                          final newLoan = Loan(
+                            id: '', 
+                            customerId: widget.customer.id,
+                            customerName: widget.customer.fullName,
+                            category: _category.text,
+                            amount: double.tryParse(_amount.text) ?? 0,
+                            rate: double.tryParse(_rate.text) ?? 0,
+                            term: double.tryParse(_term.text) ?? 0,
                             paymentStructure: _paymentStructure.text,
                             monthlyDue: double.tryParse(_monthlyDue.text) ?? 0,
-                            coMakerName: _cmName.text, coMakerAddress: _cmAddress.text, coMakerDob: cmParsedDob,
-                            coMakerMobile: _cmContact.text, coMakerMessenger: _cmMessenger.text,
-                            latestTransaction: DateTime.now(),
+                            coMakerName: _cmName.text,
+                            coMakerAddress: _cmAddress.text,
+                            coMakerDob: cmParsedDob,
+                            coMakerMobile: _cmContact.text,
+                            coMakerMessenger: _cmMessenger.text,
+                            status: 'Pending',
+                            dateApplied: DateTime.now(),
                           );
 
-                          await _service.saveCustomer(updatedCustomer, true);
+                          await _service.saveLoan(newLoan);
+                          
                           if (mounted) Navigator.pop(context);
                         }
                       },

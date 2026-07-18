@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Customer {
   final String id;
@@ -6,14 +7,18 @@ class Customer {
   final DateTime dob;
   final String spouseName, employmentStatus, civilStatus, employer, otherIncome;
   final double age, monthlyIncome;
-  // Loan
+  
+  // Legacy Loan Fields (Kept to prevent old code from breaking during transition)
   final String loanCategory, paymentStructure;
   final double loanAmount, loanRate, loanTerm, monthlyDue;
-  // Co-Maker
+  
+  // Legacy Co-Maker
   final String coMakerName, coMakerAddress, coMakerMobile, coMakerMessenger;
   final DateTime coMakerDob;
-  // History
+  
+  // History & Status
   final DateTime latestTransaction;
+  final String status;
 
   Customer({
     required this.id, required this.firstName, required this.middleName, required this.lastName,
@@ -24,9 +29,8 @@ class Customer {
     required this.paymentStructure, required this.loanAmount, required this.loanRate,
     required this.loanTerm, required this.monthlyDue, required this.coMakerName,
     required this.coMakerAddress, required this.coMakerMobile, required this.coMakerMessenger,
-    required this.coMakerDob, required this.latestTransaction,
+    required this.coMakerDob, required this.latestTransaction, required this.status,
   });
 
   String get fullName => "$firstName $lastName";
-  String get status => "Active";
 }

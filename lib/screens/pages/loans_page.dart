@@ -1,7 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+
+import '../../models/loan.dart';
+import '../../services/firestore_service.dart';
 import '../../theme/app_colors.dart';
 import '../../widgets/stat_card.dart';
-import '../../widgets/loan_application_flow.dart';
+
+// Point to the new dialogs folder
+import '../../dialogs/loanPage/loan_application_flow.dart';
 
 class LoansPage extends StatelessWidget {
   const LoansPage({super.key});
